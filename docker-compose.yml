@@ -1,0 +1,10 @@
+name: fropz-go-ddd
+
+services:
+  postgres:
+    image: postgres:alpine
+    restart: unless-stopped
+    environment:
+      - POSTGRES_PASSWORD=postgres
+    ports:
+      - "5432:5432"
