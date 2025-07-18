@@ -27,5 +27,10 @@ go.work.sum
 # env file
 .env
 
+# local file
+*.local*
+
 # Tmp folder
 tmp
+
+valkey/data

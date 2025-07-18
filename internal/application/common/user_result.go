@@ -9,6 +9,8 @@ import (
 type UserResult struct {
 	Id        uuid.UUID
 	Name      string
+	Email     string
+	Password  string
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }

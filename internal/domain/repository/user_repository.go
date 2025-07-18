@@ -10,6 +10,7 @@ import (
 type UserRepository interface {
 	Create(user *entity.ValidatedUser) (*entity.User, error)
 	FindById(id uuid.UUID) (*entity.User, error)
+	FindByEmail(email string) (*entity.User, error)
 	FindAll(userCriteria *criteria.UserCriteria) ([]*entity.User, error)
 	Update(user *entity.ValidatedUser) (*entity.User, error)
 	Delete(id uuid.UUID) error

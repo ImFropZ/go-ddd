@@ -1,0 +1,7 @@
+package event
+
+type EventPublisher interface {
+	Publish(topic string, event interface{}) error
+	PublishWithKey(topic string, key []byte, event interface{}) error
+	Close() error
+}

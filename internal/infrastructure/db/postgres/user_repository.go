@@ -36,6 +36,15 @@ func (repo *GormUserRepository) FindById(id uuid.UUID) (*entity.User, error) {
 	return fromDBUser(&dbUser), nil
 }
 
+func (repo *GormUserRepository) FindByEmail(email string) (*entity.User, error) {
+	var dbUser User
+	if err := repo.db.Model(&User{}).Where("email = ?", email).First(&dbUser).Error; err != nil {
+		return nil, err
+	}
+
+	return fromDBUser(&dbUser), nil
+}
+
 func (repo *GormUserRepository) FindAll(userCriteria *criteria.UserCriteria) ([]*entity.User, error) {
 	query := repo.db.Model(&User{})
 

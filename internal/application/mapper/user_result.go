@@ -13,6 +13,8 @@ func NewUserResultFromEntity(user *entity.User) *common.UserResult {
 	return &common.UserResult{
 		Id:        user.Id,
 		Name:      user.Name,
+		Email:     user.Email,
+		Password:  user.Password,
 		CreatedAt: user.CreatedAt,
 		UpdatedAt: user.UpdatedAt,
 	}
