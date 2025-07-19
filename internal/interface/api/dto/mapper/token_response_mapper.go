@@ -8,6 +8,7 @@ import (
 
 func ToTokenResponse(user *common.UserResult) (*response.TokenResponse, error) {
 	accessToken, err := util.GenerateAccessToken(util.AccessTokenClaims{
+		Id:    user.Id,
 		Name:  user.Name,
 		Email: user.Email,
 	})
@@ -16,7 +17,7 @@ func ToTokenResponse(user *common.UserResult) (*response.TokenResponse, error) {
 	}
 
 	refreshToken, err := util.GenerateRefreshToken(util.RefreshTokenClaims{
-		Email: user.Email,
+		Id: user.Id,
 	})
 	if err != nil {
 		return nil, err

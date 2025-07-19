@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/google/uuid"
 )
 
 // TODO: convert into env
@@ -16,13 +17,14 @@ const (
 )
 
 type AccessTokenClaims struct {
-	Name  string `json:"name"`
-	Email string `json:"email"`
+	Id    uuid.UUID `json:"id"`
+	Name  string    `json:"name"`
+	Email string    `json:"email"`
 	jwt.Claims
 }
 
 type RefreshTokenClaims struct {
-	Email string `json:"email"`
+	Id uuid.UUID `json:"id"`
 	jwt.Claims
 }
 
@@ -37,6 +39,7 @@ func RemoveBearer(token string) (string, bool) {
 
 func GenerateAccessToken(c AccessTokenClaims) (string, error) {
 	claims := jwt.MapClaims{
+		"id":    c.Id.String(),
 		"name":  c.Name,
 		"email": c.Email,
 		"exp":   time.Now().Add(time.Second * time.Duration(200)).Unix(),
@@ -54,8 +57,8 @@ func GenerateAccessToken(c AccessTokenClaims) (string, error) {
 
 func GenerateRefreshToken(c RefreshTokenClaims) (string, error) {
 	claims := jwt.MapClaims{
-		"email": c.Email,
-		"exp":   time.Now().Add(time.Hour * time.Duration(2)).Unix(),
+		"id":  c.Id.String(),
+		"exp": time.Now().Add(time.Hour * time.Duration(2)).Unix(),
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
@@ -93,10 +96,31 @@ func ValidateAccessToken(tokenString string) (AccessTokenClaims, error) {
 	}
 
 	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-		return AccessTokenClaims{
-			Name:  claims["name"].(string),
-			Email: claims["email"].(string),
-		}, nil
+		new_claims := AccessTokenClaims{}
+
+		if id, ok := claims["id"].(string); ok {
+			if id, err := uuid.Parse(id); err == nil {
+				new_claims.Id = id
+			} else {
+				return AccessTokenClaims{}, errors.New("invalid uuid format in id claims")
+			}
+		} else {
+			return AccessTokenClaims{}, errors.New("missing id claims")
+		}
+
+		if name, ok := claims["name"].(string); ok {
+			new_claims.Name = name
+		} else {
+			return AccessTokenClaims{}, errors.New("missing name claims")
+		}
+
+		if email, ok := claims["email"].(string); ok {
+			new_claims.Email = email
+		} else {
+			return AccessTokenClaims{}, errors.New("missing email claims")
+		}
+
+		return new_claims, nil
 	}
 
 	return AccessTokenClaims{}, errors.New("invalid token")
@@ -111,9 +135,19 @@ func ValidateRefreshToken(tokenString string) (RefreshTokenClaims, error) {
 	}
 
 	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-		return RefreshTokenClaims{
-			Email: claims["email"].(string),
-		}, nil
+		new_claims := RefreshTokenClaims{}
+
+		if id, ok := claims["id"].(string); ok {
+			if id, err := uuid.Parse(id); err == nil {
+				new_claims.Id = id
+			} else {
+				return RefreshTokenClaims{}, errors.New("invalid uuid format in id claims")
+			}
+		} else {
+			return RefreshTokenClaims{}, errors.New("missing id claims")
+		}
+
+		return new_claims, nil
 	}
 
 	return RefreshTokenClaims{}, errors.New("invalid refresh token")

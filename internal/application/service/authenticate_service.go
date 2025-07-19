@@ -83,6 +83,47 @@ func (service *AuthenticateService) Login(loginCommand *command.LoginCommand) (*
 	return &result, nil
 }
 
+func (service *AuthenticateService) UpdateProfile(updateProfileCommand *command.UpdateProfileCommand) (*command.UpdateProfileCommandResult, error) {
+	old_user, err := service.userRepository.FindById(updateProfileCommand.Id)
+	if err != nil {
+		return nil, err
+	}
+
+	user := entity.NewUser(updateProfileCommand.Name, updateProfileCommand.Email, old_user.Password)
+	user.Id = old_user.Id
+
+	if updateProfileCommand.CurrentPassword != "" {
+		if err := util.ComparePwd(updateProfileCommand.CurrentPassword, old_user.Password); err != nil {
+			return nil, err
+		}
+
+		user.Password = updateProfileCommand.NewPassword
+	}
+
+	validatedUser, err := entity.NewValidatedUser(user)
+	if err != nil {
+		return nil, err
+	}
+
+	if updateProfileCommand.CurrentPassword != "" {
+		validatedUser.Password, err = util.HashPwd(validatedUser.Password)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	user, err = service.userRepository.Update(validatedUser)
+	if err != nil {
+		return nil, err
+	}
+
+	result := command.UpdateProfileCommandResult{
+		Result: mapper.NewUserResultFromEntity(user),
+	}
+
+	return &result, nil
+}
+
 func (service *AuthenticateService) ResetPassword(resetPasswordCommand *command.ResetPasswordCommand) (*command.ResetPasswordCommandResult, error) {
 	user, err := service.userRepository.FindByEmail(resetPasswordCommand.Email)
 	if err != nil {

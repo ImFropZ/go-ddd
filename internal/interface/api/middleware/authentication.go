@@ -28,6 +28,7 @@ func AuthenticationHandler(next http.Handler, userRepository repository.UserRepo
 		}
 
 		r = r.WithContext(context.WithValue(r.Context(), util.AccessTokenClaims{}, util.AccessTokenClaims{
+			Id:    user.Id,
 			Name:  user.Name,
 			Email: user.Email,
 		}))
