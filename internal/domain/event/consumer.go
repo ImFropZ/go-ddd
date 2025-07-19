@@ -1,3 +1,5 @@
+//go:generate mockgen -source=consumer.go -destination=../mocks/event_consumer_mock.go -package=mocks
+
 package event
 
 type EventConsumer interface {

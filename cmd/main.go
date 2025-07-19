@@ -59,6 +59,7 @@ func main() {
 		slog.Error(fmt.Sprintf("Failed to create valkey repository: %v", err))
 		return
 	}
+	defer valkeyRepository.Close()
 
 	notificationService := service.NewNotificationService(mail)
 

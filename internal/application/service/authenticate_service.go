@@ -10,17 +10,16 @@ import (
 	"github/imfropz/go-ddd/internal/domain/entity"
 	"github/imfropz/go-ddd/internal/domain/event"
 	"github/imfropz/go-ddd/internal/domain/repository"
-	"github/imfropz/go-ddd/internal/infrastructure/db/valkey"
 	"time"
 )
 
 type AuthenticateService struct {
 	eventPublisher   event.EventPublisher
-	valkeyRepository valkey.ValkeyRepository
+	valkeyRepository repository.ValkeyRepository
 	userRepository   repository.UserRepository
 }
 
-func NewAuthenticateService(eventPublisher event.EventPublisher, valkeyRepository valkey.ValkeyRepository, userRepository repository.UserRepository) *AuthenticateService {
+func NewAuthenticateService(eventPublisher event.EventPublisher, valkeyRepository repository.ValkeyRepository, userRepository repository.UserRepository) *AuthenticateService {
 	return &AuthenticateService{
 		eventPublisher:   eventPublisher,
 		valkeyRepository: valkeyRepository,

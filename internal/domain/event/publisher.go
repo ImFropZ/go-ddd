@@ -1,3 +1,5 @@
+//go:generate mockgen -source=publisher.go -destination=../mocks/event_publisher_mock.go -package=mocks
+
 package event
 
 type EventPublisher interface {

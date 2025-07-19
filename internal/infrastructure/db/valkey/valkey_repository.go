@@ -11,13 +11,13 @@ type ValkeyRepository struct {
 	client valkey.Client
 }
 
-func NewValkeyRepository() (ValkeyRepository, error) {
+func NewValkeyRepository() (*ValkeyRepository, error) {
 	client, err := NewConnection()
 	if err != nil {
-		return ValkeyRepository{}, err
+		return nil, err
 	}
 
-	return ValkeyRepository{
+	return &ValkeyRepository{
 		client: client,
 	}, nil
 }
@@ -93,7 +93,9 @@ func (r *ValkeyRepository) LRange(ctx context.Context, key string, start, stop i
 	return r.client.Do(ctx, cmd).AsStrSlice()
 }
 
-func (r *ValkeyRepository) Close() error { return nil }
+func (r *ValkeyRepository) Close() {
+	r.client.Close()
+}
 
 func toString(value interface{}) string {
 	switch v := value.(type) {

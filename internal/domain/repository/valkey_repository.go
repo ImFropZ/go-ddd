@@ -1,3 +1,5 @@
+//go:generate mockgen -source=valkey_repository.go -destination=../mocks/valkey_repository_mock.go -package=mocks
+
 package repository
 
 import "context"
@@ -14,5 +16,5 @@ type ValkeyRepository interface {
 	HGetAll(ctx context.Context, key string) (map[string]string, error)
 	LPush(ctx context.Context, key string, values ...interface{}) error
 	LRange(ctx context.Context, key string, start, stop int64) ([]string, error)
-	Close() error
+	Close()
 }
